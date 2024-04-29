@@ -1,0 +1,11 @@
+
+plugins {
+    id("java")
+}
+
+group = "app.helipay.sm"
+version = "0.0.1-SNAPSHOT"
+
+
+dependencies {
+}
