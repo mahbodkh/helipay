@@ -1,11 +1,7 @@
-
-plugins {
-    id("java")
-}
-
-group = "app.helipay.sm"
-version = "0.0.1-SNAPSHOT"
-
-
-dependencies {
+sourceSets {
+    main {
+        java {
+            srcDirs = ['/src/main/java/app/helipay/sm']
+        }
+    }
 }
