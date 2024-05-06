@@ -8,6 +8,11 @@ springBoot {
     mainClass = "app.helipay.core.Application"
 }
 
+
+subprojects {
+
+}
+
 repositories {
     // mavenLocal()
     mavenCentral()
@@ -64,4 +69,8 @@ dependencies {
 
 task cleanResources(type: Delete) {
     delete "build/resources"
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }

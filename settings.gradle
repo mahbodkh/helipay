@@ -1,4 +1,4 @@
-rootProject.name = 'core'
+rootProject.name = 'helipay'
 
 include 'apps:bo'
 include 'apps:cm'
