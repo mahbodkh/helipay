@@ -17,13 +17,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductEntity createProduct(ProductDTO request) {
-        log.info(" ==> Request the productDto prepare: ({})", request);
-        final var product = productMapper.toEntity(request);
-        final var save = productRepository.save(product);
-        log.info(" <== The product has been persisted: ({})", save);
-        return save;
-    }
+//    public ProductEntity createProduct(ProductDTO request) {
+//        log.info(" ==> Request the productDto prepare: ({})", request);
+//        final var product = productMapper.toEntity(request);
+//        final var save = productRepository.save(product);
+//        log.info(" <== The product has been persisted: ({})", save);
+//        return save;
+//    }
 
 
     /**
@@ -32,16 +32,16 @@ public class ProductService {
      * @param productId is the id of product and should be Long.
      * @return Product Domain Model.
      */
-    public ProductEntity getProductById(Long productId) {
-        log.info(" ==> Fetching product with ID: {}", productId);
-        return Optional.of(productRepository.findById(productId))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .orElseThrow(() -> {
-                    log.warn("Product with ID {} not found.", productId);
-                    return new ProductNotFoundException("The product (" + productId + ") not found.");
-                });
-    }
+//    public ProductEntity getProductById(Long productId) {
+//        log.info(" ==> Fetching product with ID: {}", productId);
+//        return Optional.of(productRepository.findById(productId))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .orElseThrow(() -> {
+//                    log.warn("Product with ID {} not found.", productId);
+//                    return new ProductNotFoundException("The product (" + productId + ") not found.");
+//                });
+//    }
 
 
     public Page<ProductEntity> getProducts(Pageable pageable) {
@@ -55,14 +55,14 @@ public class ProductService {
      * @param request   the product dto comes from the API request.
      * @return an Optional Product.
      */
-    public Optional<ProductEntity> updateProduct(Long productId, ProductDTO request) {
-        return Optional.of(productRepository.findById(productId)).filter(Optional::isPresent).map(Optional::get).map(product -> {
-            var updatedProduct = productMapper.copyProductDtoToEntity(request, product);
-            var savedProduct = productRepository.save(updatedProduct);
-            log.info(" <== The product has been edited: {}", savedProduct);
-            return savedProduct;
-        });
-    }
+//    public Optional<ProductEntity> updateProduct(Long productId, ProductDTO request) {
+//        return Optional.of(productRepository.findById(productId)).filter(Optional::isPresent).map(Optional::get).map(product -> {
+//            var updatedProduct = productMapper.copyProductDtoToEntity(request, product);
+//            var savedProduct = productRepository.save(updatedProduct);
+//            log.info(" <== The product has been edited: {}", savedProduct);
+//            return savedProduct;
+//        });
+//    }
 
 
     /**

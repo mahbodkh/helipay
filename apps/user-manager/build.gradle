@@ -1,7 +1,7 @@
-sourceSets {
-    main {
-        java {
-            srcDirs = ['/src/main/java/app/helipay/um']
-        }
-    }
-}
+//sourceSets {
+//    main {
+//        java {
+//            srcDirs = ['/src/main/java/app/helipay/um']
+//        }
+//    }
+//}

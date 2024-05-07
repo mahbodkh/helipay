@@ -19,6 +19,17 @@ import java.util.UUID;
 @Builder
 @Entity
 public class OrderEntity {
+
+    public enum StatusType
+    {
+        CREATED,
+        ISSUED,
+        SUSPEND,
+        DELIVERED,
+        DONE,
+        ;
+    }
+
     @Id
     @GeneratedValue
     private long id;
