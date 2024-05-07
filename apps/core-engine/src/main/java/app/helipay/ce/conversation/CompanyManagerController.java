@@ -1,4 +1,4 @@
-package app.helipay.core.conversation;
+package app.helipay.ce.conversation;
 
 public interface CompanyManagerController {
 

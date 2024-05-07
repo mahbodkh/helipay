@@ -1,4 +1,4 @@
-package app.helipay.core.service;
+package app.helipay.ce.service;
 
 import org.springframework.stereotype.Service;
 
