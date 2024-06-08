@@ -1,6 +1,12 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://postgres:5432/HELIPAY_DEV
-    username: HELIPAY_USER
-    password: HELIPAY_PASS
-    driver-class-name: org.postgresql.Driver
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://postgres:5432/HELIPAY_DEV
+#    username: HELIPAY_USER
+#    password: HELIPAY_PASS
+#    driver-class-name: org.postgresql.Driver
+
+
+#    spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL94Dialect
+#    spring.jpa.show-sql=false
+#    spring.jpa.hibernate.ddl-auto=update
+#    spring.jpa.hibernate.naming.implicit-strategy=org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompl
