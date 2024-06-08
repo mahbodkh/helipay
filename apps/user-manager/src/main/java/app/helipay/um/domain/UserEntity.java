@@ -5,10 +5,19 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.BatchSize;
 
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -22,7 +31,11 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity extends BaseEntity {
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class UserEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public enum GenderType {
         MALE,
@@ -47,7 +60,7 @@ public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     //    @Pattern(regexp = "^(9)[0-9]{9}")
     @Column(length = 20)
@@ -55,6 +68,9 @@ public class UserEntity extends BaseEntity {
 
     @Size(min = 5, max = 50)
     @Column(unique = true)
+//    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 1, max = 50)
+//    @Column(length = 50, unique = true, nullable = false)
     private String username;
 
     //    @JsonIgnore
@@ -104,61 +120,84 @@ public class UserEntity extends BaseEntity {
 
     @Column
     @Builder.Default
-    private Date resetDate = null;
+    private Instant resetDate = null;
 
     @Setter(AccessLevel.NONE)
     @Version
     @Column(name = "version")
     private Integer version;
 
-//    @JsonIgnore
-//    @ManyToMany
-//    @JoinTable(
-//            name = "user_authority",
-//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")}
-//    )
-//    @BatchSize(size = 5)
-//    @Builder.Default
-//    private Set<Authority> authorities = new HashSet<>();
-
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "user_permission",
+            name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")}
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")}
     )
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @BatchSize(size = 20)
+    private Set<Authority> authorities = new HashSet<>();
+
+//    @JsonIgnore
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_permission",
+//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+//            inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")}
+//    )
 //    @BatchSize(size = 20)
 //    @Builder.Default
 //    private Set<Permission> permissions = new HashSet<>();
 
+    // Lowercase the login before saving it in database
+    public void setUsername(String username) {
+        this.username = StringUtils.lowerCase(username, Locale.ENGLISH);
+    }
 
+    @Column(name = "created")
+    @CreationTimestamp
+    private Instant created;
+    @Column(name = "changed")
+    @UpdateTimestamp
+    private Instant changed;
+
+    public void setStatus(@NotNull StatusType status) {
+        setActivated(status.equals(StatusType.ACTIVE));
+        this.status = status;
+    }
+
+    public Boolean isActivated() {
+        return activated;
+    }
 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return id == that.id;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserEntity)) {
+            return false;
+        }
+        return id != null && id.equals(((UserEntity) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
-//    @Transient
-//    public static UserEntity getBasicUser(Set<Authority> authorities, String username, String email, String firstName, String lastName) {
-//        return UserEntity.builder()
-//                .authorities(authorities)
-//                .firstName(firstName)
-//                .lastName(lastName)
-//                .username(username)
-//                .email(email)
-//                .build();
-//    }
+    @Transient
+    public static UserEntity getBasicUser(Set<Authority> authorities, String username, String email, String firstName, String lastName) {
+        return UserEntity.builder()
+                .authorities(authorities)
+                .firstName(firstName)
+                .lastName(lastName)
+                .username(username)
+                .email(email)
+                .build();
+    }
 
     @Override
     public String toString() {
@@ -178,9 +217,9 @@ public class UserEntity extends BaseEntity {
                 ", activationKey='" + activationKey + '\'' +
                 ", resetKey='" + resetKey + '\'' +
                 ", resetDate=" + resetDate + '\'' +
-//                ", authorities=" + authorities +
+                ", authorities=" + authorities +
 //                ", permissions=" + permissions +
-//                ", created=" + created +
+                ", created=" + created +
 //                ", changed=" + changed +
                 '}';
     }

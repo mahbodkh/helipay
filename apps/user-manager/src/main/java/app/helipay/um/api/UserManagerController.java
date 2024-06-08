@@ -1,6 +1,9 @@
 package app.helipay.um.api;
 
 import app.helipay.um.service.UserService;
+import app.helipay.um.service.dto.RegisterRequest;
+import app.helipay.um.service.dto.UserReply;
+import app.helipay.um.service.dto.UserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +16,19 @@ import java.awt.print.Pageable;
 public class UserManagerController {
     private final UserService userService;
 
-    //  ----------------------
-    //        ADMIN APIs
-    //  ----------------------
-//    @PostMapping("/users")
-//    public ResponseEntity<UserReply> createUser(@RequestBody UserRequest request) {
-//        return ResponseEntity.ok(userService.createUser(request));
-//    }
+
+    @PostMapping("/admin/users")
+    public ResponseEntity<UserReply> registerUser(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(userService.registerUser(request, null));
+    }
+
+    //      ----------------------
+//            ADMIN APIs
+//      ----------------------
+    @PostMapping("/admin/users")
+    public ResponseEntity<UserReply> createUser(@RequestBody UserRequest request) {
+        return ResponseEntity.ok(userService.createUser(request));
+    }
 
 //    @GetMapping("/admin/users")
 //    public ResponseEntity<List<UserReply>> getAllUsers(

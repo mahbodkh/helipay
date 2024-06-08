@@ -50,6 +50,10 @@ allprojects {
         developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+        //
+        implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 
         //
         testImplementation 'org.testcontainers:postgresql'
@@ -61,6 +65,12 @@ allprojects {
 
     test {
         useJUnitPlatform()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs = [
+                '-Amapstruct.suppressGeneratorTimestamp=true'
+        ]
     }
 
 }
@@ -79,6 +89,8 @@ configurations {
     providedRuntime
     implementation.exclude module: "spring-boot-starter-tomcat"
 }
+
+
 
 dependencies {
 //    testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
