@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/um/api/v1")
 @RequiredArgsConstructor
 public class UserManagerController implements UserManagerApi {
     private final UserService userService;
@@ -23,7 +22,7 @@ public class UserManagerController implements UserManagerApi {
     //      ----------------------
 //            ADMIN APIs
 //      ----------------------
-    @PostMapping("/admin/users")
+    @Override
     public ResponseEntity<UserReply> createUser(@RequestBody UserRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }
