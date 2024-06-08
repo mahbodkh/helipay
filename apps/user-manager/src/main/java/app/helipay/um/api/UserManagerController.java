@@ -8,17 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/um/api/v1")
 @RequiredArgsConstructor
-public class UserManagerController {
+public class UserManagerController implements UserManagerApi {
     private final UserService userService;
 
-
-    @PostMapping("/admin/users")
-    public ResponseEntity<UserReply> registerUser(@RequestBody RegisterRequest request) {
+    @Override
+    public ResponseEntity<UserReply> registerUser(RegisterRequest request) {
         return ResponseEntity.ok(userService.registerUser(request, null));
     }
 

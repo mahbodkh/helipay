@@ -7,7 +7,7 @@ plugins {
 }
 
 springBoot {
-    mainClass = 'app.helipay.core.Application'
+    mainClass = 'app.helipay.ce.Application'
 }
 
 allprojects {
@@ -15,9 +15,9 @@ allprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
-    springBoot {
-        mainClass = 'app.helipay.core.Application'
-    }
+//    springBoot {
+//        mainClass = 'app.helipay.ce.Application'
+//    }
 
     repositories {
         mavenCentral()
@@ -33,6 +33,9 @@ allprojects {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+        // database stuff
+        runtimeOnly 'org.postgresql:postgresql'
         implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
             exclude group: "spring-boot-starter-data-jpa", module: "spring-boot-starter-data-jpa"
         }
@@ -47,13 +50,12 @@ allprojects {
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
 
-        developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+//        developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
         //
         implementation 'org.mapstruct:mapstruct:1.5.5.Final'
         annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
 
         //
         testImplementation 'org.testcontainers:postgresql'
