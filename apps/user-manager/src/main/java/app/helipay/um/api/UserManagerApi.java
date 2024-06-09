@@ -57,10 +57,10 @@ public interface UserManagerApi extends UserManagerReportApi {
     @DeleteMapping("/admin/users/{id}/delete")
     ResponseEntity<Void> deleteUserByAdmin(@PathVariable("id") Long userId);
 
+
     //  ----------------------
     //      SUPER_USER APIs
     //  ----------------------
-
     @DeleteMapping("/super/users/{id}/delete")
     ResponseEntity<Void> deleteUserBySuperUser(@PathVariable("id") Long userId);
 }
