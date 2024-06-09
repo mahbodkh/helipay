@@ -46,16 +46,30 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public UserReply getUser() {
+        // get user from context
+        return null;
+    }
+
+    @Transactional(readOnly = true)
     public Optional<UserEntity> getUser(Long userId) {
         return userRepository.findById(userId);
     }
 
-//    @Transactional(readOnly = true)
+    //    @Transactional(readOnly = true)
 //    public List<UserReply> getAdminUsers() {
 //        final var userEntityAdmins
 //                = userRepository.findAllByAuthoritiesIn(Set.of(new Authority("ADMIN")));
 //        return userMapper.toDto(userEntityAdmins);
 //    }
+
+
+    @Transactional(readOnly = true)
+    public List<UserReply> getUsersByRole(String role) {
+        final var userEntitiesByRole
+                = userRepository.findAllByAuthorities_NameInAndActivatedAndStatus(List.of(role), Boolean.TRUE, UserEntity.StatusType.ACTIVE);
+        return userMapper.toDto(userEntitiesByRole);
+    }
 
     public Optional<UserEntity> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
@@ -273,9 +287,9 @@ public class UserService {
 
 
     // warning
-    public void deleteUserByUsername(String login) {
+    public void deleteUserByUsername(String username) {
         userRepository
-                .findOneByUsername(login)
+                .findOneByUsername(username)
                 .ifPresent(user -> {
                     userRepository.delete(user);
                     this.clearUserCaches(user);
@@ -283,6 +297,7 @@ public class UserService {
                 });
     }
 
+    // warning
     public void deleteUserById(Long userId) {
         userRepository
                 .findById(userId)
@@ -292,7 +307,7 @@ public class UserService {
                 });
     }
 
-    public void deleteUser(Long userId) {
+    public void safeDeleteUser(Long userId) {
         userRepository
                 .findById(userId)
                 .ifPresent(
@@ -341,7 +356,6 @@ public class UserService {
         //        new AuthenticationController.LoginReply(reply.getFirst(), null,
         //                                                reply.getSecond().stream().map(String::valueOf).collect(Collectors.toUnmodifiableSet()));
     }
-
 
 
 //      @Transactional

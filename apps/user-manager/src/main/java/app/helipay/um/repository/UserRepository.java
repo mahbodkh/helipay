@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     String USERS_BY_EMAIL_CACHE = "usersByEmail";
 
+    String USERS_BY_MOBILE_CACHE = "usersByMobile";
+
     Optional<UserEntity> findOneByActivationKey(String activationKey);
 
     List<UserEntity> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime);
@@ -38,11 +40,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @EntityGraph(attributePaths = "authorities")
     @Cacheable(cacheNames = USERS_BY_USERNAME_CACHE)
-    Optional<UserEntity> findOneWithAuthoritiesByLogin(String login);
+    Optional<UserEntity> findOneWithAuthoritiesByUsername(String login);
 
     @EntityGraph(attributePaths = "authorities")
     @Cacheable(cacheNames = USERS_BY_EMAIL_CACHE)
     Optional<UserEntity> findOneWithAuthoritiesByEmailIgnoreCase(String email);
+
+    @EntityGraph(attributePaths = "authorities")
+    @Cacheable(cacheNames = USERS_BY_MOBILE_CACHE)
+    Optional<UserEntity> findOneWithAuthoritiesByMobile(String email);
 
     Page<UserEntity> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
 
@@ -51,6 +57,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     //  @Query("select u from UserEntity u where u.authorities like %:authorities%")
     //  List<UserEntity> findAllByAuthoritiesIn(List<UserEntity.Authority> authorities);
     //  List<UserEntity> findAllByAuthoritiesIn(Set<Authority> authorities);
+
+
+    List<UserEntity> findAllByAuthorities_NameInAndActivatedAndStatus(List<String> authority, boolean activated, UserEntity.StatusType status);
+
 
     @Query("from UserEntity u where u.username =:login or u.mobile =:login or u.email =:login")
     Optional<UserEntity> findByUsernameOrMobileOrEmail(String login);
