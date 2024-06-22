@@ -1,6 +1,8 @@
 package app.helipay.ce.conversation;
 
 
-public interface UserManagerProxy {
+import app.helipay.um.api.UserManagerApi;
+
+public interface UserManagerProxy extends UserManagerApi {
 
 }
