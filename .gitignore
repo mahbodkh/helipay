@@ -163,3 +163,11 @@ Desktop.ini
 ######################
 /coverage/
 /.nyc_output/
+
+######################
+# React-specific
+######################
+/build/
+/public/build/
+/coverage/
+/.nyc_output/
