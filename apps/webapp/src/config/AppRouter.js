@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NotFoundPage from '../modules/public/notFound';
 import Home from '../pages/Home';
 import Signup from '../pages/Signup';
+import ForgetPassword from '../pages/ForgetPassword';
 import Login from '../modules/public/login/login';
 import UserDashboard from '../modules/public/dashboard/dashboard';
 
@@ -17,8 +18,11 @@ const AppRouter = () => {
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/login/forgot-password" element={<ForgetPassword />} />
+
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
+
+        <Route path="/users/:id/dashboard" element={<UserDashboard />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/language-manager" element={<LanguageManager />} />

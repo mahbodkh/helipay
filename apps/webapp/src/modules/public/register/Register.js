@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Box, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -70,6 +71,13 @@ const Register = () => {
           >
             Sign Up
           </Button>
+          <Button
+              component={Link}
+              to="/login"
+              color="primary"
+            >
+              Login
+            </Button>
         </Box>
       </Box>
     </Container>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../modules/public/navbar/Navbar';
 
-const Login = () => {
+const LoginPage = () => {
   return (
     <>
     <Navbar />
@@ -11,4 +11,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginPage
