@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from '../modules/public/home/home';
+import NotFoundPage from '../modules/public/notFound';
+import Home from '../pages/Home';
+import Signup from '../pages/Signup';
 import Login from '../modules/public/login/login';
 import UserDashboard from '../modules/public/dashboard/dashboard';
 
@@ -11,14 +13,16 @@ const AppRouter = () => {
   return (
     <Router>
       <Routes>
+        <Route path="*" element={<NotFoundPage />} />
+
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<UserDashboard />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/language-manager" element={<LanguageManager />} />
         <Route path="/admin/language-manager/:id" element={<LanguageManager />} />
-
 
       </Routes>
     </Router>

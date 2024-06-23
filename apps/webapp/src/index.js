@@ -2,14 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { ThemeProvider } from './app/config/theme/themeContext';
-import AppRouter from './app/config/AppRouter';
+import { ThemeProvider } from './config/theme/themeContext';
+import AppRouter from './config/AppRouter';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider>
-      <AppRouter />
+        <AppRouter />
     </ThemeProvider>
   </React.StrictMode>
 );
