@@ -1,25 +1,19 @@
 package app.helipay.um.service.mapper;
 
 
+import app.helipay.um.constants.Constants;
 import app.helipay.um.domain.Authority;
 import app.helipay.um.domain.UserEntity;
+import app.helipay.um.service.dto.RegisterRequest;
 import app.helipay.um.service.dto.UserReply;
 import app.helipay.um.service.dto.UserRequest;
-import org.mapstruct.*;
-
-//
 import org.springframework.data.domain.Page;
-//import org.springframework.web.bind.annotation.Mapping;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-//@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-//        @Mapping(target = "id", ignore = true)
+    //        @Mapping(target = "id", ignore = true)
 //    @Mapping(target = "resetKey", ignore = true)
 ////  @Mapping(target = "accounts", ignore = true)
 //    @Mapping(target = "activationKey", ignore = true)
@@ -29,13 +23,23 @@ public interface UserMapper {
 //    @Mapping(target = "imageUrl", ignore = true)
 //    @Mapping(target = "created", ignore = true)
 //    @Mapping(target = "changed", ignore = true)
-    UserEntity toEntity(UserRequest request);
+//    UserEntity toEntity(UserRequest request);
+    default UserEntity toEntity(UserRequest request) {
 
-    UserReply toDto(UserEntity entity);
+        final UserEntity.UserEntityBuilder builder = UserEntity.builder();
 
-    List<UserReply> toDto(List<UserEntity> entities);
+        builder.id(request.id());
+        builder.firstName(request.firstName());
+        builder.lastName(request.lastName());
+        builder.imageUrl(request.imageUrl());
 
-    List<UserReply> toDto(Page<UserEntity> entities);
+        builder.username(request.username() != null ? request.username().toLowerCase() : null);
+        builder.email(request.email() != null ? request.email().toLowerCase() : null);
+        builder.langKey(request.langKey() != null ? request.langKey() : Constants.DEFAULT_LANGUAGE);
+        builder.activated(request.isActivated() != null ? request.isActivated() : false);
+
+        return builder.build();
+    }
 
     // WARNING: ADMIN USAGE
 
@@ -50,21 +54,69 @@ public interface UserMapper {
 //    @Mapping(target = "created", ignore = true)
 //    @Mapping(target = "changed", ignore = true)
 //    @Mapping(target = "username", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void copyUpdateToEntity(UserRequest input, @MappingTarget UserEntity target);
+//    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    default UserEntity userRequestToEntity(UserRequest input, UserEntity target) {
+        if (input.username() != null) {
+            target.setUsername(input.username().toLowerCase());
+        }
+        if (input.firstName() != null) {
+            target.setFirstName(input.firstName());
+        }
+        if (input.lastName() != null) {
+            target.setLastName(input.lastName());
+        }
+        if (input.email() != null) {
+            target.setEmail(input.email().toLowerCase());
+        }
+        if (input.imageUrl() != null) {
+            target.setImageUrl(input.imageUrl());
+        }
+        if (input.langKey() != null) {
+            target.setLangKey(input.langKey());
+        }
+        if (input.isActivated() != null) {
+            target.setActivated(input.isActivated());
+        }
 
-    default Page<UserReply> toPageDto(Page<UserEntity> entities) {
-        return entities.map(this::toDto);
+        return target;
+    }
+
+    default List<UserReply> toDto(Page<UserEntity> entities) {
+        return entities.getContent().stream().map(this::toDto).toList();
+    }
+
+    default List<UserReply> toDto(List<UserEntity> users) {
+        return users.stream().filter(Objects::nonNull).map(this::toDto).toList();
     }
 
 
-//     List<UserReply> usersToUserDTOs(List<UserEntity> users) {
-//        return users.stream().filter(Objects::nonNull).map(this::userToUserDTO).toList();
-//    }
+    default UserReply toDto(UserEntity entity) {
+        if (entity == null) {
+            return null;
+        } else {
+            return new UserReply(entity.getId(),
+                    entity.getUsername(),
+                    entity.getFirstName(),
+                    entity.getLastName(),
+                    entity.getEmail(),
+                    entity.getImageUrl(),
+                    entity.isActivated(),
+                    entity.getLangKey(),
+                    entity.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet()));
+        }
+    }
 
-//     UserDTO userToUserDTO(User user) {
-//        return new UserDTO(user);
-//    }
+
+    default UserEntity registerRequestToEntity(RegisterRequest request) {
+        return UserEntity.builder()
+                .username(request.username().toLowerCase())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email().toLowerCase())
+                .imageUrl(request.imageUrl())
+                .build();
+    }
+
 
     private Set<Authority> authoritiesFromStrings(Set<String> authoritiesAsString) {
         Set<Authority> authorities = new HashSet<>();

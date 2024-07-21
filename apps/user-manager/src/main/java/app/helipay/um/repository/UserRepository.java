@@ -27,10 +27,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     List<UserEntity> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime);
 
+    @Cacheable(cacheNames = USERS_BY_EMAIL_CACHE)
     Optional<UserEntity> findOneByEmailIgnoreCase(String email);
 
+    @Cacheable(cacheNames = USERS_BY_MOBILE_CACHE)
     Optional<UserEntity> findOneByMobile(String mobile);
 
+    @Cacheable(cacheNames = USERS_BY_USERNAME_CACHE)
     Optional<UserEntity> findOneByUsername(String username);
 
     Optional<UserEntity> findOneByUsernameAndStatus(String username, UserEntity.StatusType status);

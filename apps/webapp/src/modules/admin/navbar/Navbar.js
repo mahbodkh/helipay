@@ -46,24 +46,16 @@ const Navbar = () => {
 
   const itemList = [
     {
-      text: "Home",
-      to: "/"
+      text: "Dashboard",
+      to: "/admin"
     },
      {
-       text: "Signup",
-       to: "/signup"
+       text: "Users",
+       to: "/admin/users"
      },
     {
-      text: "About",
-      to: "/about"
-    },
-    {
-      text: "Contact",
-      to: "/contact"
-    },
-    {
-      text: "Login",
-      to: "/login"
+      text: "Products",
+      to: "/products"
     }
   ];
 
@@ -77,12 +69,21 @@ const Navbar = () => {
       elevation={0}
     >
       <StyledToolbar>
+      <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'left' }}>
+
         <Typography
           variant="h6"
           component="h2"
         >
           HelyPay
         </Typography>
+        <Typography
+          variant="h10"
+          component="h2"
+        >
+          Admin Dashboard
+        </Typography>
+        </Box>
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
           <SearchForm />
           <Switch

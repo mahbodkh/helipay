@@ -18,10 +18,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -39,6 +37,7 @@ public class UserService {
     private final AuthorityRepository authorityRepository;
     //
     private static final int DEF_COUNT = 6;
+    private static final int USER_COMPLETE_PASSWORD_MIN = 5;
 
     @Transactional(readOnly = true)
     public List<UserReply> getAllUsers(Pageable pageable) {
@@ -47,7 +46,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserReply getUser() {
-        // get user from context
+        // get user from catchManager
+//        final var user = SecurityContextHolder.getContext().getAuthentication().getName();
+//        return userMapper.toDto(userRepository.findByUsername(user));
         return null;
     }
 
@@ -76,12 +77,13 @@ public class UserService {
         return userRepository
                 .findOneByActivationKey(key)
                 .map(user -> {
-                    // activate given user for the registration key.
                     user.setActivated(true);
                     user.setActivationKey(null);
+
+                    final UserEntity saved = userRepository.save(user);
                     this.clearUserCaches(user);
-                    log.debug("Activated user: {}", user);
-                    return user;
+                    log.debug("Activated user: {}", saved);
+                    return saved;
                 });
     }
 
@@ -89,14 +91,17 @@ public class UserService {
         log.debug("Reset user password for reset key {}", key);
         return userRepository
                 .findOneByResetKey(key)
-                .filter(user -> user.getResetDate().isAfter(Instant.now().minus(1, ChronoUnit.DAYS)))
+                .filter(user -> user.getResetDate().isAfter(Instant.now().minus(USER_COMPLETE_PASSWORD_MIN, ChronoUnit.MINUTES)))
                 .map(user -> {
 //                    user.setPassword(passwordEncoder.encode(newPassword));
                     user.setPassword(newPassword);
                     user.setResetKey(null);
                     user.setResetDate(null);
+
+                    final UserEntity saved = userRepository.save(user);
                     this.clearUserCaches(user);
-                    return user;
+                    log.debug("Password reset is done for user: {}", saved);
+                    return saved;
                 });
     }
 
@@ -107,73 +112,49 @@ public class UserService {
                 .map(user -> {
                     user.setResetKey(RandomStringUtils.randomAlphanumeric(DEF_COUNT));
                     user.setResetDate(Instant.now());
+
+                    final UserEntity saved = userRepository.save(user);
+                    log.debug("Request password reset for user: {}", saved);
                     this.clearUserCaches(user);
                     return user;
                 });
     }
 
 
-//    public UserReply createUser(UserRequest request) {
-//        var userEntity = UserEntity.builder().build();
-//        userMapper.copyUpdateToEntity(request, userEntity);
-//        userEntity.setResetDate(Instant.now());
-//
-//        //    String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
-//        //    user.setPassword(encryptedPassword);
-//        //    user.setResetKey(RandomUtil.generateResetKey());
-//
-//        userEntity = userRepository.save(userEntity);
-//        log.debug("Created Information for User: {}", userEntity);
-//        return userMapper.toDto(userEntity);
-//    }
-
     public UserReply createUser(UserRequest request) {
-        var userEntity = UserEntity.builder().build();
-        userEntity.setUsername(request.username().toLowerCase());
-        userEntity.setFirstName(request.firstName());
-        userEntity.setLastName(request.lastName());
-        if (request.email() != null) {
-            userEntity.setEmail(request.email().toLowerCase());
-        }
-        userEntity.setImageUrl(request.imageUrl());
-        if (request.langKey() == null) {
-            userEntity.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
-        } else {
-            userEntity.setLangKey(request.langKey());
-        }
+
+        final UserEntity userEntity = userMapper.toEntity(request);
+
 //        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
 //        userEntity.setPassword(encryptedPassword);
-//        userEntity.setResetKey(RandomUtil.generateResetKey());
+
+        userEntity.setResetDate(Instant.now());
         userEntity.setResetKey(RandomStringUtils.randomAlphanumeric(DEF_COUNT));
         userEntity.setPassword(RandomStringUtils.randomAlphanumeric(DEF_COUNT));
-        userEntity.setResetDate(Instant.now());
-        userEntity.setActivated(true);
-        if (request.authorities() != null) {
-            Set<Authority> authorities = request
-                    .authorities()
-                    .stream()
-                    .map(authorityRepository::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toSet());
-            userEntity.setAuthorities(authorities);
-        }
-        userRepository.save(userEntity);
+        userEntity.setActivated(false);
+
+        final Set<Authority> authorities = request.authorities() == null
+                ? Set.of(new Authority().name(AuthoritiesConstants.USER))
+                : request.authorities()
+                .stream()
+                .map(authorityRepository::findByName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+        userEntity.setAuthorities(authorities);
+
+        final UserEntity saved = userRepository.save(userEntity);
         this.clearUserCaches(userEntity);
-        log.debug("Created Information for User: {}", userEntity);
-        return userMapper.toDto(userEntity);
+        log.debug("Created is done for this user: {}", saved);
+        return userMapper.toDto(saved);
     }
 
-//    /**
-//     * register is create user by client!
-//     *
-//     * @param request dto is mostly should equal to UserDto.
-//     * @param file
-//     */
-//    public void registerUser(RegisterRequest request, MultipartFile file) {
-//
-//    }
-
+    /**
+     * register is create user by client!
+     *
+     * @param request dto is mostly should equal to UserDto.
+     */
+    // needed to handle file as well!
     public UserReply registerUser(RegisterRequest request, String password) {
         userRepository
                 .findOneByUsername(request.username().toLowerCase())
@@ -193,31 +174,22 @@ public class UserService {
                     }
                 });
 
-        UserEntity newUser = new UserEntity();
+        // check userByMobile as well
+
+        final UserEntity newUser = userMapper.registerRequestToEntity(request);
+
 //        String encryptedPassword = passwordEncoder.encode(password);
 //        newUser.setPassword(encryptedPassword);
         newUser.setPassword(password);
-        newUser.setUsername(request.username().toLowerCase());
-        newUser.setFirstName(request.firstName());
-        newUser.setLastName(request.lastName());
-
-        if (request.email() != null) {
-            newUser.setEmail(request.email().toLowerCase());
-        }
-
-        newUser.setImageUrl(request.imageUrl());
-        newUser.setLangKey(request.langKey());
+        newUser.setLangKey(request.langKey() != null ? request.langKey() : Constants.DEFAULT_LANGUAGE);
         newUser.setActivated(false);
         newUser.setActivationKey(RandomStringUtils.randomNumeric(DEF_COUNT));
+        newUser.setAuthorities(Set.of(new Authority().name(AuthoritiesConstants.USER)));
 
-        Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
-        newUser.setAuthorities(authorities);
-
-        userRepository.save(newUser);
+        final UserEntity saved = userRepository.save(newUser);
         this.clearUserCaches(newUser);
-        log.debug("Created Information for User: {}", newUser);
-        return userMapper.toDto(newUser);
+        log.debug("Register for this User: {}", saved);
+        return userMapper.toDto(saved);
     }
 
 
@@ -233,45 +205,23 @@ public class UserService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(user -> {
-                    this.clearUserCaches(user);
+                    user = userMapper.userRequestToEntity(request, user);
 
-                    userMapper.copyUpdateToEntity(request, user);
-                    user = userRepository.save(user);
-                    log.debug("Changed Information for User: {}", user);
-                    return user;
+                    if (request.authorities() != null) {
+                        final Set<Authority> updatedAuthorities = request.authorities()
+                                .stream()
+                                .map(authorityRepository::findByName)
+                                .filter(Optional::isPresent)
+                                .map(Optional::get)
+                                .collect(Collectors.toSet());
+                        user.setAuthorities(updatedAuthorities);
+                    }
+                    final UserEntity saved = userRepository.save(user);
+                    this.clearUserCaches(user);
+                    log.debug("Updated for this User: {}", saved);
+                    return saved;
                 })
                 .map(userMapper::toDto);
-    }
-
-    public Optional<UserReply> updateUser(UserRequest request) {
-        return Optional.of(userRepository.findById(request.id()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(user -> {
-                    this.clearUserCaches(user);
-                    user.setUsername(request.username().toLowerCase());
-                    user.setFirstName(request.firstName());
-                    user.setLastName(request.lastName());
-                    if (request.email() != null) {
-                        user.setEmail(request.email().toLowerCase());
-                    }
-                    user.setImageUrl(request.imageUrl());
-                    user.setActivated(request.isActivated());
-                    user.setLangKey(request.langKey());
-                    Set<Authority> managedAuthorities = user.getAuthorities();
-                    managedAuthorities.clear();
-                    request
-                            .authorities()
-                            .stream()
-                            .map(authorityRepository::findById)
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .forEach(managedAuthorities::add);
-                    userRepository.save(user);
-                    this.clearUserCaches(user);
-                    log.debug("Changed Information for User: {}", user);
-                    return user;
-                }).map(userMapper::toDto);
     }
 
 
@@ -429,9 +379,9 @@ public class UserService {
     }
 
     private void clearUserCaches(UserEntity userEntity) {
-        Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_USERNAME_CACHE)).evict(userEntity.getUsername());
+        Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_USERNAME_CACHE), "USERS_BY_USERNAME_CACHE is null").evict(userEntity.getUsername());
         if (userEntity.getEmail() != null) {
-            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(userEntity.getEmail());
+            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE), "USERS_BY_EMAIL_CACHE is null").evict(userEntity.getEmail());
         }
     }
 
