@@ -12,11 +12,12 @@ java {
     }
 }
 
-
-
-//springBoot {
-//    mainClass = 'app.helipay.ce.Application'
-//}
+project(':apps:core-engine') {
+    apply plugin: 'org.springframework.boot'
+    bootRun {
+        mainClass = 'app.helipay.ce.Application'
+    }
+}
 
 allprojects {
     apply plugin: 'java'
