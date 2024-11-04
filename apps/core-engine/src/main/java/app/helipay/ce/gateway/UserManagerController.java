@@ -1,7 +1,6 @@
 package app.helipay.ce.gateway;
 
 import app.helipay.ce.service.UserManagerService;
-import app.helipay.um.api.PaginationValidator;
 import app.helipay.um.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +18,7 @@ import java.util.List;
 public class UserManagerController implements UserController {
 
     private final UserManagerService userService;
+
     //  ----------------------
     //        CLIENT APIs
     //  ----------------------
@@ -29,7 +29,7 @@ public class UserManagerController implements UserController {
 
 
     @Override
-    public ResponseEntity<UserReply> registerUser(RegisterRequest request) {
+    public ResponseEntity<UserReply> registerUser(final RegisterRequest request) {
         return ResponseEntity.ok(userService.registerUser(request, null));
     }
 
@@ -43,11 +43,21 @@ public class UserManagerController implements UserController {
         return null;
     }
 
+    @Override
+    public ResponseEntity<List<UserReply>> getNextUsers() {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<UserReply> getNextUser() {
+        return null;
+    }
+
     //----------------------
     //     ADMIN APIs
     //----------------------
     @Override
-    public ResponseEntity<UserReply> getUserByAdmin(@PathVariable("id") Long userId) {
+    public ResponseEntity<UserReply> getUserByAdmin(final @PathVariable("id") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
@@ -58,11 +68,11 @@ public class UserManagerController implements UserController {
 
     @Override
     public ResponseEntity<List<UserReply>> getAllUsers(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "20") int size
+            final @RequestParam(value = "page", defaultValue = "0") int page,
+            final @RequestParam(value = "size", defaultValue = "20") int size
     ) {
         final Pageable pageable = PaginationValidator.validatePaginationOrThrow(page, size);
-        return ResponseEntity.ok(userService.getAllUsers(pageable));
+        return ResponseEntity.ok(userService.getAllUsers(pageable.getPageSize(), pageable.getPageNumber()));
     }
 
     @Override
@@ -96,7 +106,7 @@ public class UserManagerController implements UserController {
 
     @Override
     public ResponseEntity<List<UserReply>> getUsersByCity(String city) {
-
+        return null;
     }
 
     @Override
@@ -109,7 +119,7 @@ public class UserManagerController implements UserController {
         return null;
     }
 
-    //  ----------------------
+//  ----------------------
     //      COMMON APIs
     //  ----------------------
 //    @PutMapping("/users/{id}")

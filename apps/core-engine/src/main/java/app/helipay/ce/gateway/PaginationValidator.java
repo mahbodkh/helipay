@@ -1,4 +1,4 @@
-package app.helipay.um.api;
+package app.helipay.ce.gateway;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

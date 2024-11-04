@@ -17,6 +17,8 @@ public interface UserManagerApi {
 
     UserReply getUser();
 
+    UserReply getUserById(final Long userId);
+
     UserReply updateUser(final Long userId, final UserRequest request, MultipartFile file);
 
     List<UserReply> getUsersByCity(final String city);
@@ -40,15 +42,23 @@ public interface UserManagerApi {
 
     UserReply updateUserByAdmin(final Long userId, final UserRequest request, MultipartFile file);
 
-    Void banUser(final Long userId);
+    void banUser(final Long userId);
 
-    Void frozenUser(final Long userId);
+    void unBanUser(final Long userId);
 
-    Void deleteUserByAdmin(final Long userId);
+    void frozenUser(final Long userId);
+
+    void unFrozenUser(final Long userId);
+
+    void safeDeleteUser(Long userId);
 
 
     //  ----------------------
     //      SUPER_USER APIs
     //  ----------------------
-    Void deleteUserBySuperUser(final Long userId);
+    void deleteUserBySuperUser(final Long userId);
+
+    void deleteUserByAdmin(final Long userId);
+
+    void deleteUserById(Long userId);
 }

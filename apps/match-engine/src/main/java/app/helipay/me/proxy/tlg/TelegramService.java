@@ -42,56 +42,56 @@ public class TelegramService {
     }
 
 
-    @Override
-    public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Long chatId = update.getMessage().getChatId();
-            String messageText = update.getMessage().getText();
-
-            if (messageText.equals("/start")) {
-                registration(chatId);
-            } else if (registrationCache.containsKey(chatId)) {
-                continueRegistration(chatId, messageText);
-            }
-        }
-    }
+//    @Override
+//    public void onUpdateReceived(Update update) {
+//        if (update.hasMessage() && update.getMessage().hasText()) {
+//            Long chatId = update.getMessage().getChatId();
+//            String messageText = update.getMessage().getText();
+//
+//            if (messageText.equals("/start")) {
+//                registration(chatId);
+//            } else if (registrationCache.containsKey(chatId)) {
+//                continueRegistration(chatId, messageText);
+//            }
+//        }
+//    }
 
     private void registration(Long chatId) {
-        sendMessage(chatId, "Welcome! Let's get you registered. What language do you prefer?");
+//        sendMessage(chatId, "Welcome! Let's get you registered. What language do you prefer?");
         registrationCache.put(chatId, new MatchEntity());
     }
 
-    private void continueRegistration(Long chatId, String messageText) {
-        UserEntity user = registrationCache.get(chatId);
-
-        if (user.getLanguage() == null) {
-            user.setLanguage(messageText);
-            sendMessage(chatId, "Great! Now, please enter your age:");
-        } else if (user.getAge() == 0) {
-            try {
-                user.setAge(Integer.parseInt(messageText));
-                sendMessage(chatId, "Perfect! Please describe yourself:");
-            } catch (NumberFormatException e) {
-                sendMessage(chatId, "Invalid input for age. Please enter a number:");
-            }
-        } else if (user.getDescription() == null) {
-            user.setDescription(messageText);
-            sendMessage(chatId, "Nice! Now, enter your city:");
-        } else if (user.getLocation() == null) {
-            user.setLocation(messageText);
-            userRepository.save(user);
-            sendMessage(chatId, "Registration complete! You can now start finding matches.");
-            registrationCache.remove(chatId);
-        }
-    }
-
-    public void sendMessage(Long chatId, String text) {
-        SendMessage message = new SendMessage(chatId, text);
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void continueRegistration(Long chatId, String messageText) {
+//        UserEntity user = registrationCache.get(chatId);
+//
+//        if (user.getLanguage() == null) {
+//            user.setLanguage(messageText);
+//            sendMessage(chatId, "Great! Now, please enter your age:");
+//        } else if (user.getAge() == 0) {
+//            try {
+//                user.setAge(Integer.parseInt(messageText));
+//                sendMessage(chatId, "Perfect! Please describe yourself:");
+//            } catch (NumberFormatException e) {
+//                sendMessage(chatId, "Invalid input for age. Please enter a number:");
+//            }
+//        } else if (user.getDescription() == null) {
+//            user.setDescription(messageText);
+//            sendMessage(chatId, "Nice! Now, enter your city:");
+//        } else if (user.getLocation() == null) {
+//            user.setLocation(messageText);
+//            userRepository.save(user);
+//            sendMessage(chatId, "Registration complete! You can now start finding matches.");
+//            registrationCache.remove(chatId);
+//        }
+//    }
+//
+//    public void sendMessage(Long chatId, String text) {
+//        SendMessage message = new SendMessage(chatId, text);
+//        try {
+//            execute(message);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

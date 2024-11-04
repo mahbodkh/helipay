@@ -1,14 +1,22 @@
 package app.helipay.um.service;
 
 import app.helipay.um.api.UserManagerApi;
+import app.helipay.um.handler.UserDbHandler;
 import app.helipay.um.service.dto.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserManagerApi {
+
+    private final UserDbHandler userDbHandler;
+
     @Override
     public UserReply registerUser(RegisterRequest request) {
         return null;
@@ -21,7 +29,12 @@ public class UserService implements UserManagerApi {
 
     @Override
     public UserReply getUser() {
-        return null;
+        return userDbHandler.getUser();
+    }
+
+    @Override
+    public UserReply getUserById(Long userId) {
+        return userDbHandler.getUserById(userId);
     }
 
     @Override
@@ -61,7 +74,8 @@ public class UserService implements UserManagerApi {
 
     @Override
     public List<UserReply> getAllUsers(int page, int size) {
-        return List.of();
+        final Pageable pageable = PageRequest.of(0, 10);
+        return userDbHandler.getAllUsers(pageable);
     }
 
     @Override
@@ -75,22 +89,37 @@ public class UserService implements UserManagerApi {
     }
 
     @Override
-    public Void banUser(Long userId) {
-        return null;
+    public void banUser(Long userId) {
     }
 
     @Override
-    public Void frozenUser(Long userId) {
-        return null;
+    public void frozenUser(Long userId) {
     }
 
     @Override
-    public Void deleteUserByAdmin(Long userId) {
-        return null;
+    public void deleteUserByAdmin(Long userId) {
     }
 
     @Override
-    public Void deleteUserBySuperUser(Long userId) {
-        return null;
+    public void deleteUserBySuperUser(Long userId) {
+    }
+
+    @Override
+    public void safeDeleteUser(Long userId) {
+    }
+
+    @Override
+    public void unBanUser(Long userId) {
+        
+    }
+
+    @Override
+    public void unFrozenUser(Long userId) {
+
+    }
+
+    @Override
+    public void deleteUserById(Long userId) {
+
     }
 }

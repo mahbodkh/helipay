@@ -27,18 +27,24 @@ public interface UserController {
     @PutMapping("/users/{id}/update")
     ResponseEntity<UserReply> updateUser(@PathVariable("id") Long userId, @RequestBody UserRequest request, MultipartFile file);
 
-    @GetMapping("/users/city")
-    ResponseEntity<List<UserReply>> getUsersByCity(@RequestParam("city") String city);
+    @GetMapping("/users/next/all")
+    ResponseEntity<List<UserReply>> getNextUsers();
 
-    @GetMapping("/users/language")
-    ResponseEntity<List<UserReply>> getUsersByLanguage(@RequestParam("language") String language);
-
-    @GetMapping("/users/location")
-    ResponseEntity<List<UserReply>> getUsersByLocation(@RequestParam("userFrom") long userFrom, @RequestParam("radius") double radius);
+    @GetMapping("/users/next")
+    ResponseEntity<UserReply> getNextUser();
 
     //  ----------------------
     //        ADMIN APIs
     //  ----------------------
+    @GetMapping("/admin/users/city")
+    ResponseEntity<List<UserReply>> getUsersByCity(@RequestParam("city") String city);
+
+    @GetMapping("/admin/users/language")
+    ResponseEntity<List<UserReply>> getUsersByLanguage(@RequestParam("language") String language);
+
+    @GetMapping("/admin/users/location")
+    ResponseEntity<List<UserReply>> getUsersByLocation(@RequestParam("userFrom") long userFrom, @RequestParam("radius") double radius);
+
     @PostMapping("/admin/users/create")
     ResponseEntity<UserReply> createUser(@RequestBody UserRequest request);
 
