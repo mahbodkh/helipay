@@ -1,6 +1,6 @@
 package app.helipay.core.controller;
 
-import app.helipay.um.service.UserService;
+import app.helipay.um.handler.UserDbHandler;
 import app.helipay.um.service.dto.LoginReply;
 import app.helipay.um.service.dto.LoginRequest;
 import app.helipay.um.service.dto.RegisterRequest;
@@ -38,14 +38,14 @@ class UserManagerApiTest {
 
 
     @Autowired
-    UserService userService;
+    UserDbHandler userDbHandler;
 
     @Test
     public void testRegisterUser() throws Exception {
         final var request = buildRegisterRequest();
         final var expectedResponse = buildUserReply();
 
-        when(userService.registerUser(any(RegisterRequest.class), any())).thenReturn(expectedResponse);
+        when(userDbHandler.registerUser(any(RegisterRequest.class), any())).thenReturn(expectedResponse);
 
 
         mockMvc.perform(MockMvcRequestBuilders.post("/um/api/v1/users/register")
@@ -64,7 +64,7 @@ class UserManagerApiTest {
         final var request = buildLoginRequest();
         final var expectedResponse = buildLoginReply();
 
-        when(userService.login(eq(request))).thenReturn(expectedResponse);
+        when(userDbHandler.login(eq(request))).thenReturn(expectedResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/um/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ class UserManagerApiTest {
     void testGetUserById() throws Exception {
         // Mock the userService.getUserById method to return a predefined user
         final var user = buildUserReply();
-        when(userService.getUserById(anyLong())).thenReturn(user);
+        when(userDbHandler.getUserById(anyLong())).thenReturn(user);
 
         // Perform the GET request to the endpoint
         mockMvc.perform(MockMvcRequestBuilders.get("/um/api/v1/users/{id}", 1L)

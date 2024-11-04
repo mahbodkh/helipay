@@ -1,4 +1,5 @@
 dependencies {
     implementation project(':apps:user-manager')
     implementation project(':apps:shop-engine')
+    implementation project(':apps:match-engine')
 }

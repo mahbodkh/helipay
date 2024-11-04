@@ -1,21 +1,24 @@
-package app.helipay.um.api;
+package app.helipay.ce.gateway;
 
-import app.helipay.um.service.UserService;
+import app.helipay.ce.service.UserManagerService;
+import app.helipay.um.api.PaginationValidator;
 import app.helipay.um.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
 @RestController
 @RequiredArgsConstructor
-public class UserManagerController implements UserManagerApi {
-    private final UserService userService;
+public class UserManagerController implements UserController {
 
+    private final UserManagerService userService;
     //  ----------------------
     //        CLIENT APIs
     //  ----------------------
@@ -91,6 +94,20 @@ public class UserManagerController implements UserManagerApi {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<List<UserReply>> getUsersByCity(String city) {
+
+    }
+
+    @Override
+    public ResponseEntity<List<UserReply>> getUsersByLanguage(String language) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<List<UserReply>> getUsersByLocation(long userFrom, double radius) {
+        return null;
+    }
 
     //  ----------------------
     //      COMMON APIs

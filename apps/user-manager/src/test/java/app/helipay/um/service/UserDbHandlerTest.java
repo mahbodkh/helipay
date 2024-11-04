@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import app.helipay.um.constants.AuthoritiesConstants;
 import app.helipay.um.domain.Authority;
 import app.helipay.um.domain.UserEntity;
+import app.helipay.um.handler.UserDbHandler;
 import app.helipay.um.repository.AuthorityRepository;
 import app.helipay.um.repository.UserRepository;
 import app.helipay.um.service.dto.RegisterRequest;
@@ -36,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class UserServiceTest {
+class UserDbHandlerTest {
 
     private static final Long DEFAULT_ID = 1L;
     private static final String DEFAULT_USERNAME = "username";
@@ -63,7 +64,7 @@ class UserServiceTest {
     private AuthorityRepository authorityRepository;
 
     @InjectMocks
-    private UserService userService;
+    private UserDbHandler userDbHandler;
 
     private UserEntity user;
     private UserReply userReply;
@@ -75,7 +76,7 @@ class UserServiceTest {
         userReply = buildUserReply();
 
         assertThat(userRepository).isNotNull();
-        assertThat(userService).isNotNull();
+        assertThat(userDbHandler).isNotNull();
         assertThat(userMapper).isNotNull();
 
         numberOfUsers = userRepository.count();
@@ -90,7 +91,7 @@ class UserServiceTest {
                 .map(cacheName -> this.cacheManager.getCache(cacheName))
                 .filter(Objects::nonNull)
                 .forEach(Cache::clear);
-        userService.deleteUser(DEFAULT_USERNAME);
+        userDbHandler.deleteUser(DEFAULT_USERNAME);
         assertThat(userRepository.count()).isEqualTo(numberOfUsers);
         numberOfUsers = null;
     }
@@ -111,7 +112,7 @@ class UserServiceTest {
         when(userMapper.toDto(any(UserEntity.class))).thenReturn(userReply);
 
 
-        final UserReply result = userService.createUser(request);
+        final UserReply result = userDbHandler.createUser(request);
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(user.getId());
@@ -136,7 +137,7 @@ class UserServiceTest {
         List<UserReply> users = List.of(userReply);
         when(userMapper.toDto(any(Page.class))).thenReturn(users);
 
-        List<UserReply> result = userService.getAllUsers(pageable);
+        List<UserReply> result = userDbHandler.getAllUsers(pageable);
 
         assertThat(users.size()).isGreaterThan(0);
         assertThat(users.size()).isEqualTo(result.size());
@@ -149,7 +150,7 @@ class UserServiceTest {
         final Long userId = user.getId();
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        final Optional<UserEntity> result = userService.getUser(userId);
+        final Optional<UserEntity> result = userDbHandler.getUser(userId);
 
         assertThat(result).isPresent();
         assertThat(user).isEqualTo(result.get());
@@ -165,7 +166,7 @@ class UserServiceTest {
 
         when(userMapper.toDto(any(List.class))).thenReturn(List.of(userReply));
 
-        final List<UserReply> result = userService.getUsersByRole("ROLE_USER");
+        final List<UserReply> result = userDbHandler.getUsersByRole("ROLE_USER");
 
         assertThat(result).isNotNull();
         assertThat(users.size()).isEqualTo(result.size());
@@ -186,7 +187,7 @@ class UserServiceTest {
 
         when(userRepository.findOneByActivationKey(eq(key))).thenReturn(Optional.of(user));
 
-        Optional<UserEntity> result = userService.activateRegistration(key);
+        Optional<UserEntity> result = userDbHandler.activateRegistration(key);
 
         assertThat(result).isPresent();
         assertThat(result.get().isActivated()).isTrue();
@@ -204,7 +205,7 @@ class UserServiceTest {
         user.setActivated(false);
         when(userRepository.findOneByEmailIgnoreCase(eq(user.getEmail()))).thenReturn(Optional.of(user));
 
-        Optional<UserEntity> maybeUser = userService.requestPasswordReset(user.getEmail());
+        Optional<UserEntity> maybeUser = userDbHandler.requestPasswordReset(user.getEmail());
         assertThat(maybeUser).isNotPresent();
     }
 
@@ -217,7 +218,7 @@ class UserServiceTest {
 
         setupUserSave();
 
-        Optional<UserEntity> result = userService.requestPasswordReset(user.getEmail());
+        Optional<UserEntity> result = userDbHandler.requestPasswordReset(user.getEmail());
         assertThat(result).isPresent();
 
         verifyCache();
@@ -231,10 +232,10 @@ class UserServiceTest {
         when(userRepository.findOneByEmailIgnoreCase("invalid.login@localhost")).thenReturn(Optional.empty());
         when(userRepository.findOneByEmailIgnoreCase(user.getEmail())).thenReturn(Optional.of(user));
 
-        Optional<UserEntity> maybeUser = userService.requestPasswordReset("invalid.login@localhost");
+        Optional<UserEntity> maybeUser = userDbHandler.requestPasswordReset("invalid.login@localhost");
         assertThat(maybeUser).isNotPresent();
 
-        maybeUser = userService.requestPasswordReset(user.getEmail());
+        maybeUser = userDbHandler.requestPasswordReset(user.getEmail());
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getEmail()).isEqualTo(user.getEmail());
         assertThat(maybeUser.orElse(null).getResetDate()).isNotNull();
@@ -258,7 +259,7 @@ class UserServiceTest {
 
         when(userRepository.findOneByResetKey(eq(resetKey))).thenReturn(Optional.of(user));
 
-        Optional<UserEntity> maybeUser = userService.completePasswordReset("newPassword", user.getResetKey());
+        Optional<UserEntity> maybeUser = userDbHandler.completePasswordReset("newPassword", user.getResetKey());
         assertThat(maybeUser).isPresent();
 
         assertThat(maybeUser.get().isActivated()).isEqualTo(user.getActivated());
@@ -283,7 +284,7 @@ class UserServiceTest {
 
         when(userRepository.findOneByResetKey(eq(resetKey))).thenReturn(Optional.empty());
 
-        Optional<UserEntity> maybeUser = userService.completePasswordReset("newPassword", user.getResetKey());
+        Optional<UserEntity> maybeUser = userDbHandler.completePasswordReset("newPassword", user.getResetKey());
         assertThat(maybeUser).isNotPresent();
     }
 
@@ -293,7 +294,7 @@ class UserServiceTest {
         List<Authority> authorities = List.of(new Authority().name(AuthoritiesConstants.USER), new Authority().name("ROLE_ADMIN"));
         when(authorityRepository.findAll()).thenReturn(authorities);
 
-        List<String> result = userService.getAuthorities();
+        List<String> result = userDbHandler.getAuthorities();
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(authorities.size());
@@ -315,7 +316,7 @@ class UserServiceTest {
         when(userMapper.toDto(any(UserEntity.class))).thenReturn(userReply);
 
 
-        final UserReply result = userService.registerUser(request, password);
+        final UserReply result = userDbHandler.registerUser(request, password);
 
         assertThat(result).isNotNull();
         verify(userRepository).save(any(UserEntity.class));
@@ -331,7 +332,7 @@ class UserServiceTest {
 
         when(userRepository.findById(eq(userId))).thenReturn(Optional.of(user));
 
-        userService.frozenUser(userId);
+        userDbHandler.frozenUser(userId);
 
         assertThat(user.getStatus()).isEqualTo(UserEntity.StatusType.FROZEN);
         verify(userRepository).save(user);
@@ -345,7 +346,7 @@ class UserServiceTest {
         when(userRepository.findById(eq(userId))).thenReturn(Optional.of(user));
         when(userMapper.toDto(any(UserEntity.class))).thenReturn(userReply);
 
-        final UserReply result = userService.getUserById(userId);
+        final UserReply result = userDbHandler.getUserById(userId);
 
 
         assertThat(result).isNotNull();
@@ -391,7 +392,7 @@ class UserServiceTest {
         when(userMapper.toDto(any(UserEntity.class))).thenReturn(reply);
 
         // when
-        final Optional<UserReply> result = userService.updateUser(userId, request);
+        final Optional<UserReply> result = userDbHandler.updateUser(userId, request);
 
         assertThat(result).isPresent();
         assertThat(request.username()).isEqualTo(result.get().username());
@@ -417,7 +418,7 @@ class UserServiceTest {
         final String username = DEFAULT_USERNAME;
         when(userRepository.findOneByUsername(eq(username))).thenReturn(Optional.of(user));
 
-        userService.deleteUserByUsername(username);
+        userDbHandler.deleteUserByUsername(username);
 
         verify(userRepository).delete(user);
 
@@ -430,7 +431,7 @@ class UserServiceTest {
         final String login = "userLogin";
         when(userRepository.findByUsernameOrMobileOrEmail(eq(login))).thenReturn(Optional.of(user));
 
-        userService.deleteUser(login);
+        userDbHandler.deleteUser(login);
 
         verify(userRepository).deleteById(user.getId());
     }
@@ -442,7 +443,7 @@ class UserServiceTest {
         final Long userId = DEFAULT_ID;
         when(userRepository.findById(eq(userId))).thenReturn(Optional.of(user));
 
-        userService.safeDeleteUser(userId);
+        userDbHandler.safeDeleteUser(userId);
 
         assertThat(user.getStatus()).isEqualTo(UserEntity.StatusType.DELETED);
         verify(userRepository).save(user);
@@ -456,7 +457,7 @@ class UserServiceTest {
 
         when(userRepository.findById(eq(userId))).thenReturn(Optional.of(user));
 
-        userService.banUser(userId);
+        userDbHandler.banUser(userId);
 
         assertThat(user.getStatus()).isEqualTo(UserEntity.StatusType.BANNED);
         verify(userRepository).save(user);

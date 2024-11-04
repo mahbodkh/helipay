@@ -66,4 +66,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("from UserEntity u where u.username =:login or u.mobile =:login or u.email =:login")
     Optional<UserEntity> findByUsernameOrMobileOrEmail(String login);
+
+
+    List<UserEntity> findAllByCity(String city);
+
+    List<UserEntity> findAllByLanguage(String language);
+
+    List<UserEntity> findAllByNearby(long userId, double radius);
+
 }

@@ -119,6 +119,15 @@ public class UserEntity implements Serializable {
     private String resetKey;
 
     @Column
+    private int age;
+
+    @Column
+    private String location;
+
+    @Column(length = 100)
+    private String description;
+
+    @Column
     @Builder.Default
     private Instant resetDate = null;
 

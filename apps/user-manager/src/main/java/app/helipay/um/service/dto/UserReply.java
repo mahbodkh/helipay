@@ -8,7 +8,6 @@ public record UserReply(Long id, String username, String firstName, String lastN
     public UserReply {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(username, "username must not be null");
-        Objects.requireNonNull(email, "email must not be null");
-        // Additional validation logic can be added here if necessary
+//        Objects.requireNonNull(email, "email must not be null");
     }
 }
