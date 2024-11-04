@@ -31,11 +31,11 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserEntity implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     public enum GenderType {
         MALE,
@@ -115,7 +115,7 @@ public class UserEntity implements Serializable {
     private String activationKey;
 
     @Column(length = 20)
-    //    @JsonIgnore
+//    @JsonIgnore
     private String resetKey;
 
     @Column
@@ -145,6 +145,7 @@ public class UserEntity implements Serializable {
     )
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @BatchSize(size = 20)
+    @Builder.Default
     private Set<Authority> authorities = new HashSet<>();
 
 //    @JsonIgnore

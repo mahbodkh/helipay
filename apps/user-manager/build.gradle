@@ -4,6 +4,3 @@
 //            srcDirs = ['/src/main/java/app/helipay/um']
 //        }
 //    }
-dependencies {
-    implementation project(':apps:match-engine')
-}

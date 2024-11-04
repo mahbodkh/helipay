@@ -29,12 +29,14 @@ public class UserService implements UserManagerApi {
 
     @Override
     public UserReply getUser() {
-        return userDbHandler.getUser();
+//        return userDbHandler.getUser();
+        return null;
     }
 
     @Override
     public UserReply getUserById(Long userId) {
-        return userDbHandler.getUserById(userId);
+//        return userDbHandler.getUserById(userId);
+        return null;
     }
 
     @Override
@@ -75,7 +77,8 @@ public class UserService implements UserManagerApi {
     @Override
     public List<UserReply> getAllUsers(int page, int size) {
         final Pageable pageable = PageRequest.of(0, 10);
-        return userDbHandler.getAllUsers(pageable);
+//        return userDbHandler.getAllUsers(pageable);
+        return null;
     }
 
     @Override
@@ -110,7 +113,7 @@ public class UserService implements UserManagerApi {
 
     @Override
     public void unBanUser(Long userId) {
-        
+
     }
 
     @Override

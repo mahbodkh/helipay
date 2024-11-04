@@ -16,7 +16,7 @@ import java.util.Optional;
 public class PostService
 {
 
-  private final PostRepository postRepository;
+//  private final PostRepository postRepository;
 //  private final PostMapper postMapper;
 
 //  public PostReply createPost(PostRequest request) {
@@ -40,13 +40,13 @@ public class PostService
 //    return postMapper.toDto(postEntities);
 //  }
 
-  public void deletePost(Long postId) {
-    postRepository.findById(postId)
-                  .ifPresent(postEntity -> {
-                    postRepository.deleteById(postEntity.getId());
-                    log.debug("Deleted User: {}", postEntity);
-                  });
-  }
+//  public void deletePost(Long postId) {
+//    postRepository.findById(postId)
+//                  .ifPresent(postEntity -> {
+//                    postRepository.deleteById(postEntity.getId());
+//                    log.debug("Deleted User: {}", postEntity);
+//                  });
+//  }
 
 //  public List<PostReply> getPostByPageName(String name) {
 //    return null;

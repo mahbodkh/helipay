@@ -21,7 +21,7 @@ import org.springframework.data.domain.Persistable;
 @Getter
 @Entity
 @Table(name = "um_authority")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = {"new", "id"})
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Authority implements Serializable, Persistable<String> {
@@ -46,6 +46,10 @@ public class Authority implements Serializable, Persistable<String> {
     @UpdateTimestamp
     private Instant changed;
 
+
+    public Authority(String name) {
+        this.name = name;
+    }
 
     public Authority name(String name) {
         this.setName(name);

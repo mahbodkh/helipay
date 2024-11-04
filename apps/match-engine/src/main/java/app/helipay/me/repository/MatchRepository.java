@@ -11,15 +11,15 @@ import java.util.Optional;
 
 @Repository
 public interface MatchRepository extends JpaRepository<MatchEntity, Long> {
-    Optional<MatchEntity> findByUserFromAndUserTo(long userFrom, long userTo);
+//    Optional<MatchEntity> findByUserFromAndUserTo(long userFrom, long userTo);
 
-    @Query("select u from matchEntity u where u.id NOT IN " +
-            "(SELECT m.userToId FROM MatchEntity m WHERE m.userFromId = :userFrom)")
-    List<MatchEntity> findUsersNotMatchedBy(@Param("userFrom") long userFrom);
-
-
-    @Query("SELECT u.id FROM UserEntity u WHERE u.city = :city AND u.id != :userFrom " +
-            "AND u.id NOT IN (SELECT m.userToId FROM MatchEntity m WHERE m.userFromId = :userFrom)")
-    List<Long> findPotentialUserIdsByLocation(@Param("userFrom") long userFrom, @Param("city") String city);
+//    @Query("select u from matchEntity u where u.id NOT IN " +
+//            "(SELECT m.userToId FROM MatchEntity m WHERE m.userFromId = :userFrom)")
+//    List<MatchEntity> findUsersNotMatchedBy(@Param("userFrom") long userFrom);
+//
+//
+//    @Query("SELECT u.id FROM UserEntity u WHERE u.city = :city AND u.id != :userFrom " +
+//            "AND u.id NOT IN (SELECT m.userToId FROM MatchEntity m WHERE m.userFromId = :userFrom)")
+//    List<Long> findPotentialUserIdsByLocation(@Param("userFrom") long userFrom, @Param("city") String city);
 
 }

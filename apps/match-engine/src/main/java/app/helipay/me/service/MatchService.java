@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class MatchService {
 
-    private final MatchRepository matchRepository;
-    private final TelegramService telegramService;
+//    private final MatchRepository matchRepository;
+//    private final TelegramService telegramService;
 
 
     public void matcher(long userFrom, long userTo) {

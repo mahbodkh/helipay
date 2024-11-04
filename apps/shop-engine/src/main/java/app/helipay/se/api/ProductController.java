@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageRequest;
 @RequestMapping(path = "/api/v1/products", produces = "application/json")
 public class ProductController {
 
-    private final ProductService productService;
+//    private final ProductService productService;
 //    private final ProductMapper productMapper;
 
     // ==============================================
@@ -53,6 +53,6 @@ public class ProductController {
     @DeleteMapping("/admin/{id}/delete/")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAccount(@Valid @PathVariable("id") Long productId) {
-        productService.deleteProduct(productId);
+//        productService.deleteProduct(productId);
     }
 }

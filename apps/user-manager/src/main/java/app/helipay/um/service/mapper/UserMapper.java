@@ -124,11 +124,7 @@ public interface UserMapper {
         if (authoritiesAsString != null) {
             authorities = authoritiesAsString
                     .stream()
-                    .map(string -> {
-                        Authority auth = new Authority();
-                        auth.setName(string);
-                        return auth;
-                    })
+                    .map(Authority::new)
                     .collect(Collectors.toSet());
         }
 

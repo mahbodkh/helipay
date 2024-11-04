@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+//@Service
 public class TelegramService {
-    private Map<Long, MatchEntity> registrationCache = new HashMap<>();
+    private final Map<Long, MatchEntity> registrationCache = new HashMap<>();
 
     public void start() {
         final String token = "8018593919:AAFzD5zkV8XoiFrEBawsw2CF8wwwOCvkDRw";

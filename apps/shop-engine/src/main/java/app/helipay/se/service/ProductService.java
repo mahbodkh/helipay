@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
+//@Slf4j
+//@Service
+//@RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductRepository productRepository;
+//    private final ProductRepository productRepository;
 
 //    public ProductEntity createProduct(ProductDTO request) {
 //        log.info(" ==> Request the productDto prepare: ({})", request);
@@ -44,9 +44,9 @@ public class ProductService {
 //    }
 
 
-    public Page<ProductEntity> getProducts(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
+//    public Page<ProductEntity> getProducts(Pageable pageable) {
+//        return productRepository.findAll(pageable);
+//    }
 
     /**
      * Update a product ( Drink / Topping ).
@@ -70,10 +70,10 @@ public class ProductService {
      *
      * @param productId is the id of product.
      */
-    public void deleteProduct(Long productId) {
-        productRepository.findById(productId).ifPresent(entity -> {
-            productRepository.delete(entity);
-            log.info(" <== Deleted product: {}", entity);
-        });
-    }
+//    public void deleteProduct(Long productId) {
+//        productRepository.findById(productId).ifPresent(entity -> {
+//            productRepository.delete(entity);
+//            log.info(" <== Deleted product: {}", entity);
+//        });
+//    }
 }

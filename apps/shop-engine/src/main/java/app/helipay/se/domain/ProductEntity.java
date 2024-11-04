@@ -19,8 +19,8 @@ import static app.helipay.se.service.SlugHandler.getSlugger;
  * Created by Ebrahim Kh.
  */
 
-@Entity
-@Table(name = "se_products")
+//@Entity
+//@Table(name = "se_products")
 @Getter
 @Setter
 @NoArgsConstructor

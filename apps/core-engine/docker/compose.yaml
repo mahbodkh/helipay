@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=HELIPAY_DEV'
-      - 'POSTGRES_USER=HELIPAY_USER'
-      - 'POSTGRES_PASSWORD=HELIPAY_PASS'
-    ports:
-      - '5432:5432'
