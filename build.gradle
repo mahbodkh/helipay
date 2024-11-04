@@ -78,10 +78,12 @@ allprojects {
         useJUnitPlatform()
     }
 
-    tasks.withType(JavaCompile) {
-        options.compilerArgs = [
-                '-Amapstruct.suppressGeneratorTimestamp=true'
-        ]
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs = [
+                    '-Amapstruct.suppressGeneratorTimestamp=true'
+            ]
+        }
     }
 
 }
